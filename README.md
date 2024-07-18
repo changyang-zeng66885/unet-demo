@@ -1,4 +1,7 @@
-# U-Net: Semantic segmentation with PyTorch
+# 基于U-net的 全脑血管定量重构
+本研究旨在于使用U-net建立有效的全脑血管定量重构的计算方法，在方法学的基础上定量分析全脑毛细血管的空间分布与局部密度，建立全脑血管高分辨率空间图谱建立基础。
+
+## U-Net: Semantic segmentation with PyTorch
 <a href="#"><img src="https://img.shields.io/github/actions/workflow/status/milesial/PyTorch-UNet/main.yml?logo=github&style=for-the-badge" /></a>
 <a href="https://hub.docker.com/r/milesial/unet"><img src="https://img.shields.io/badge/docker%20image-available-blue?logo=Docker&style=for-the-badge" /></a>
 <a href="https://pytorch.org/"><img src="https://img.shields.io/badge/PyTorch-v1.13+-red.svg?logo=PyTorch&style=for-the-badge" /></a>

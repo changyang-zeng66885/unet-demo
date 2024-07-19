@@ -36,3 +36,5 @@ print(f"Pyplot 低亮度像素点占比: {rateByPyplot:.2%}") ## Pyplot 低亮�
 # 上面的实验说明，可能需要将原来的mask通过pyplot转化一下，这样才能看到比较清晰的图片。
 #　后面可用试一试这种方法，将train_data/test_data 中的masks数据进行数据预处理。
 
+
+

@@ -12,7 +12,7 @@ from pathlib import Path
 from torch.utils.data import Dataset
 from tqdm import tqdm
 
-
+# 判断文件扩展名并加载图像
 def load_image(filename):
     ext = splitext(filename)[1]
     if ext == '.npy':

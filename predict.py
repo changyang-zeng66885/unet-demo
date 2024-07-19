@@ -84,7 +84,8 @@ if __name__ == '__main__':
     #net = UNet(n_channels=3, n_classes=args.classes, bilinear=args.bilinear)
     net = UNet(n_channels=1, n_classes=1, bilinear=False)
 
-    model = "checkpoints/checkpoint.pth"
+    model = "checkpoints/checkpoint_0719.pth"
+    # model = "checkpoints/unet_carvana_scale1.0_epoch2.pth"
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # logging.info(f'Loading model {args.model}')
     # logging.info(f'Using device {device}')

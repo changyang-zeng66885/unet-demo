@@ -76,6 +76,7 @@ if __name__ == '__main__':
     # logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
     #in_files = args.input
+    
     in_files = ["test_data/imgs_png/frame_0.png","test_data/imgs_png/frame_1.png"]
     #out_files = get_output_filenames(args)
     # out_files = "test_data/predict_masks"

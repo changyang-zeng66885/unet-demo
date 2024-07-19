@@ -64,7 +64,7 @@ class BasicDataset(Dataset):
     @staticmethod
     def preprocess(mask_values, pil_img, scale, is_mask):
         w, h = pil_img.size
-        print(f"w={w},h={h}")
+        # print(f"w={w},h={h}")
         newW, newH = int(scale * w), int(scale * h)
         pil_img = np.array(pil_img, dtype=np.float32)
 

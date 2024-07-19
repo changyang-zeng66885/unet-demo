@@ -76,15 +76,15 @@ if __name__ == '__main__':
     # logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
     #in_files = args.input
-    in_files = ["test_data/imgs/frame_0.tif","test_data/imgs/frame_1.tif"]
+    in_files = ["test_data/imgs_png/frame_0.png","test_data/imgs_png/frame_1.png"]
     #out_files = get_output_filenames(args)
     # out_files = "test_data/predict_masks"
-    out_files = ["test_data/predict_masks/frame_0.png","test_data/predict_masks/frame_1.png"]
+    out_files = ["test_data/masks_png/frame_0.png","test_data/masks_png/frame_1.png"]
 
     #net = UNet(n_channels=3, n_classes=args.classes, bilinear=args.bilinear)
-    net = UNet(n_channels=1, n_classes=2, bilinear=False)
+    net = UNet(n_channels=1, n_classes=1, bilinear=False)
 
-    model = "checkpoints/checkpoint_epoch1.pth"
+    model = "checkpoints/checkpoint.pth"
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # logging.info(f'Loading model {args.model}')
     # logging.info(f'Using device {device}')

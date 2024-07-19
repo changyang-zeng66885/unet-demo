@@ -19,8 +19,8 @@ from unet import UNet
 from utils.data_loading import BasicDataset, CarvanaDataset
 from utils.dice_score import dice_loss
 
-dir_img = Path('train_data/imgs')
-dir_mask = Path('train_data/masks_t')
+dir_img = Path('train_data/imgs_png_c1')
+dir_mask = Path('train_data/masks_png_c1')
 dir_checkpoint = Path('checkpoints')
 
 
@@ -57,7 +57,7 @@ def train_model(
     print("3. Create data loaders")
     loader_args = dict(batch_size=batch_size, num_workers=os.cpu_count(), pin_memory=True)
     train_loader = DataLoader(train_set, shuffle=True, **loader_args)
-    val_loader = DataLoader(val_set, shuffle=False, drop_last=True, **loader_args)
+    val_loader = DataLoader(val_set, shuffle=False, drop_last=False, **loader_args)
 
     # (Initialize logging)
     print("(Initialize logging)")
@@ -121,6 +121,7 @@ def train_model(
                     if model.n_classes == 1:
                         loss = criterion(masks_pred.squeeze(1), true_masks.float())
                         loss += dice_loss(F.sigmoid(masks_pred.squeeze(1)), true_masks.float(), multiclass=False)
+                        print("loss:",loss)
                     else:
                         loss = criterion(masks_pred, true_masks)
                         loss += dice_loss(
@@ -178,12 +179,12 @@ def train_model(
                         except:
                             pass
 
-        if save_checkpoint:
-            Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
-            state_dict = model.state_dict()
-            state_dict['mask_values'] = dataset.mask_values
-            torch.save(state_dict, str(dir_checkpoint / 'checkpoint_epoch{}.pth'.format(epoch)))
-            print(f'Checkpoint {epoch} saved!')
+    if save_checkpoint:
+        Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
+        state_dict = model.state_dict()
+        state_dict['mask_values'] = dataset.mask_values
+        torch.save(state_dict, str(dir_checkpoint / 'checkpoint_0719.pth'.format(epoch)))
+        print(f'Checkpoint saved!')
 
 
 def get_args():
@@ -202,10 +203,6 @@ def get_args():
 
     return parser.parse_args()
 
-"""
-train.py -h --epochs 1 --batch-size 4 --learning-rate 1e-5 --load False  --scale 0.5 
-
-"""
 
 if __name__ == '__main__':
     # args = get_args()
@@ -218,7 +215,7 @@ if __name__ == '__main__':
     # n_channels=3 for RGB images
     # n_classes is the number of probabilities you want to get per pixel
     ## model = UNet(n_channels=1, n_classes=args.classes, bilinear=args.bilinear)
-    model = UNet(n_channels=1, n_classes=2, bilinear=False)
+    model = UNet(n_channels=1, n_classes=1, bilinear=False)
     model = model.to(memory_format=torch.channels_last)
 
     logging.info(f'Network:\n'
@@ -236,8 +233,8 @@ if __name__ == '__main__':
     model.to(device=device)
     train_model(
         model=model,
-        epochs=1,
-        batch_size=2,
+        epochs=10,
+        batch_size=4,
         learning_rate=1e-5,
         device=device,
         img_scale=1,

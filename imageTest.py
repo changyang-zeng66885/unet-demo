@@ -4,12 +4,12 @@ import numpy as np
 import cv2
 
 # 展示图片
-def showImage(imagePath):
-    img = Image.open(imagePath)
-    plt.figure(figsize=(8, 6))
-    plt.imshow(img , cmap='gray')
-    plt.axis('off')
-    plt.show() 
+# def showImage(imagePath):
+#     img = Image.open(imagePath)
+#     plt.figure(figsize=(8, 6))
+#     plt.imshow(img , cmap='gray')
+#     plt.axis('off')
+#     plt.show() 
 
 # # 统计亮度值低于50的像素点占比
 def calculateLowBrightnessRate(imagePath):
@@ -52,8 +52,8 @@ for imagePath in filePathList:
     即使输入的图像是单通道灰度图,它也会被转换成 RGB 三通道格式。
     因此,img.shape 返回的通道数是 3。
     """
-    cv2.imshow(imagePath,img)
-    showImage(imagePath)
+    # cv2.imshow(imagePath,img)
+    # showImage(imagePath)
 
     
 

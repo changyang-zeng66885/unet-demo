@@ -72,41 +72,63 @@ def mask_to_image(mask: np.ndarray, mask_values):
 
 
 if __name__ == '__main__':
-    args = get_args()
-    logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+    # args = get_args()
+    # logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
-    in_files = args.input
-    out_files = get_output_filenames(args)
+    #in_files = args.input
+    in_files = ["test_data/imgs/frame_0.tif","test_data/imgs/frame_1.tif"]
+    #out_files = get_output_filenames(args)
+    # out_files = "test_data/predict_masks"
+    out_files = ["test_data/predict_masks/frame_0.png","test_data/predict_masks/frame_1.png"]
 
-    net = UNet(n_channels=3, n_classes=args.classes, bilinear=args.bilinear)
+    #net = UNet(n_channels=3, n_classes=args.classes, bilinear=args.bilinear)
+    net = UNet(n_channels=1, n_classes=2, bilinear=False)
 
+    model = "checkpoints/checkpoint_epoch1.pth"
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    logging.info(f'Loading model {args.model}')
-    logging.info(f'Using device {device}')
+    # logging.info(f'Loading model {args.model}')
+    # logging.info(f'Using device {device}')
+    print(f'Loading model {model}')
+    print(f'Using device {device}')
 
     net.to(device=device)
-    state_dict = torch.load(args.model, map_location=device)
+    #state_dict = torch.load(args.model, map_location=device)
+    state_dict = torch.load(model, map_location=device)
     mask_values = state_dict.pop('mask_values', [0, 1])
     net.load_state_dict(state_dict)
 
-    logging.info('Model loaded!')
+    # logging.info('Model loaded!')
+    print('Model loaded!')
 
+    
+    print("in_files:",in_files)
     for i, filename in enumerate(in_files):
-        logging.info(f'Predicting image {filename} ...')
+        # logging.info(f'Predicting image {filename} ...')
+        print(f'Predicting image {filename} ...')
         img = Image.open(filename)
 
+        if len(img.getbands()) == 4 or len(img.getbands()) == 3:
+            # 如果图像有 4 个通道或 3 个通道,则转换为单通道图像
+            img = Image.fromarray(np.array(img)[:, :, 0]).convert('L')
+
+        # mask = predict_img(net=net,
+        #                    full_img=img,
+        #                    scale_factor=args.scale,
+        #                    out_threshold=args.mask_threshold,
+        #                    device=device)
         mask = predict_img(net=net,
                            full_img=img,
-                           scale_factor=args.scale,
-                           out_threshold=args.mask_threshold,
+                           scale_factor=1,
+                           out_threshold=0.5,
                            device=device)
 
-        if not args.no_save:
-            out_filename = out_files[i]
-            result = mask_to_image(mask, mask_values)
-            result.save(out_filename)
-            logging.info(f'Mask saved to {out_filename}')
+        # if not args.no_save:
+        ## 保存结果
+        out_filename = out_files[i]
+        result = mask_to_image(mask, mask_values)
+        result.save(out_filename)
+        logging.info(f'Mask saved to {out_filename}')
 
-        if args.viz:
-            logging.info(f'Visualizing results for image {filename}, close to continue...')
-            plot_img_and_mask(img, mask)
+        # if args.viz:
+        #     logging.info(f'Visualizing results for image {filename}, close to continue...')
+        #     plot_img_and_mask(img, mask)

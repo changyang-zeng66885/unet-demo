@@ -64,10 +64,61 @@ class BasicDataset(Dataset):
     @staticmethod
     def preprocess(mask_values, pil_img, scale, is_mask):
         w, h = pil_img.size
+        print(f"w={w},h={h}")
         newW, newH = int(scale * w), int(scale * h)
+        pil_img = np.array(pil_img, dtype=np.float32)
+
+        # 检查图像的形状
+        if len(pil_img.shape) == 2:  # 灰度图像
+            pil_img = np.expand_dims(pil_img, axis=0)  # 增加通道维度
+        elif len(pil_img.shape) == 3:  # 彩色图像
+            pil_img = np.transpose(pil_img, (2, 0, 1))  # 将通道维度移到最前面
+
+        pil_img = torch.from_numpy(pil_img)
+
         assert newW > 0 and newH > 0, 'Scale is too small, resized images would have no pixel'
-        pil_img = pil_img.resize((newW, newH), resample=Image.NEAREST if is_mask else Image.BICUBIC)
-        img = np.asarray(pil_img)
+
+        # 添加批次维度
+        pil_img = pil_img.unsqueeze(0)
+        
+        # 使用 F.interpolate() 调整图像大小
+        import torch.nn.functional as F
+        if is_mask:
+            pil_img = F.interpolate(pil_img, size=(newH, newW), mode='nearest')
+        else:
+            pil_img = F.interpolate(pil_img, size=(newH, newW), mode='bicubic', align_corners=False)
+        
+        # 移除批次维度
+        pil_img = pil_img.squeeze(0)
+        
+        # 将张量转换回 NumPy 数组
+        img = pil_img.numpy()
+        
+        # 如果是灰度图像，去掉通道维度
+        if img.shape[0] == 1:
+            img = img.squeeze(0)
+        else:  # 如果是彩色图像，恢复原来的维度顺序
+            img = np.transpose(img, (1, 2, 0))
+
+        # #pil_img = torch.from_numpy(pil_img)
+
+        # assert newW > 0 and newH > 0, 'Scale is too small, resized images would have no pixel'
+        # # pil_img = pil_img.resize((newW, newH), resample=Image.NEAREST if is_mask else Image.BICUBIC)
+        
+        # # 使用 F.interpolate() 调整图像大小
+        # import torch.nn.functional as F
+        # # 添加通道维度
+        # pil_img = pil_img.unsqueeze(0)
+        
+        # # 使用 F.interpolate() 调整图像大小
+        # pil_img = F.interpolate(pil_img, size=(newH, newW), mode='nearest' if is_mask else 'bicubic', align_corners=False)
+        
+        # # 移除添加的通道维度
+        # pil_img = pil_img.squeeze(0)
+
+        # img = np.asarray(pil_img)
+
+
 
         if is_mask:
             mask = np.zeros((newH, newW), dtype=np.int64)

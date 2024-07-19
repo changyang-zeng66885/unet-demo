@@ -1,40 +1,61 @@
 from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
+import cv2
 
-# # 统计亮度值低于50的像素点数量
-def calculateLowBrightnessRate(imagePath):
+# 展示图片
+def showImage(imagePath):
     img = Image.open(imagePath)
+    plt.figure(figsize=(8, 6))
+    plt.imshow(img , cmap='gray')
+    plt.axis('off')
+    plt.show() 
+
+# # 统计亮度值低于50的像素点占比
+def calculateLowBrightnessRate(imagePath):
+    img = cv2.imread(imagePath)
+
+    # 转换为灰度图像
+    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # cv2.imshow("gray_img",gray_img)
     # 将图像转换为numpy数组
-    img_array = np.array(img)
-
+    img_array = np.array(gray_img)
     low_brightness_count = np.sum(img_array < 50)
-
     # 计算占比
     total_pixels = img_array.size
     low_brightness_ratio = low_brightness_count / total_pixels
     return low_brightness_ratio
 
-# initPath = 'train_data/masks/frame_0.tif'
-rate1 = calculateLowBrightnessRate("test_data/predict_result2/frame_0.png")
-print(f"低亮度像素点占比: {rate1:.2%}") # 低亮度像素点占比: 100.00%
+#　打印图片的通道数量
+def getChannleNum(imagePath):
+    img = Image.open(imagePath)
+    num_channels = img.getbands()
+    return num_channels
     
 
-# # 将原图像通过PIL和pyplot保存
-# imgInit = Image.open(initPath)
-# plt.figure(figsize=(8, 6))
-# plt.imshow(imgInit , cmap='gray')
-# plt.axis('off')
-# plt.savefig('saved_image_by_plt.png', dpi=300, bbox_inches='tight') # 保存的图像是正常的
-# imgInit.save('saved_image_by_pil.png') #保存的图像时全黑的
+    
+filePathList = [
+    "train_data/imgs_png_c1/frame_0.png",
+    "train_data/masks_png_c1/frame_0_mask.png",
+    "test_data/imgs_png/frame_0.png"
+]
 
-# ##再次测试用打开plt保存的图像
-# imgP = Image.open('saved_image_by_pil.png')
-# rateByPyplot = calculateLowBrightnessRate('saved_image_by_plt.png')
-# print(f"Pyplot 低亮度像素点占比: {rateByPyplot:.2%}") ## Pyplot 低亮度像素点占比: 67.92%
+for imagePath in filePathList:
+    print(imagePath)
+    print("通道数量:",getChannleNum(imagePath))
+    print("亮度值低于50的像素点数量占比",calculateLowBrightnessRate(imagePath))
+    img = cv2.imread(imagePath)
+    height, width,_ = img.shape
+    print(f"图片尺寸: 宽 {width} px , 高 {height} px")
+    """
+    cv2.imread(imagePath) 函数读取的图像默认是 RGB 三通道格式。
+    即使输入的图像是单通道灰度图,它也会被转换成 RGB 三通道格式。
+    因此,img.shape 返回的通道数是 3。
+    """
+    cv2.imshow(imagePath,img)
+    showImage(imagePath)
 
-# # 上面的实验说明，可能需要将原来的mask通过pyplot转化一下，这样才能看到比较清晰的图片。
-# #　后面可用试一试这种方法，将train_data/test_data 中的masks数据进行数据预处理。
+    
 
 
 
